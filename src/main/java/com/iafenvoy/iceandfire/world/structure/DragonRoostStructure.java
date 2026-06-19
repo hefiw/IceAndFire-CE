@@ -5,6 +5,8 @@ import com.iafenvoy.iceandfire.entity.util.HomePosition;
 import com.iafenvoy.iceandfire.item.block.PileBlock;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
+import com.iafenvoy.iceandfire.world.RoostWorldData;
+import com.iafenvoy.uranus.ServerHelper;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -81,11 +83,19 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
 
         @Override
         public void postProcess(@NotNull WorldGenLevel world, @NotNull StructureManager structureAccessor, @NotNull ChunkGenerator chunkGenerator, @NotNull RandomSource random, BoundingBox chunkBox, @NotNull ChunkPos chunkPos, @NotNull BlockPos pivot) {
+            RoostWorldData data = RoostWorldData.get(world.getLevel());
+            if (data != null) {
+                for (BlockPos roost : data.getRoosts()) {
+                    if (roost.equals(pivot)) continue;
+                    if (roost.closerThan(pivot, 320)) {return;}
+                }
+            }
             if (!chunkBox.isInside(pivot))
                 return;
 
-            int radius = 12 + random.nextInt(8);
+            int radius = 20 + random.nextInt(5);
             this.spawnDragon(world, pivot, random, radius, this.isMale);
+            if (data != null) {data.addRoost(pivot);}
             this.generateSurface(world, pivot, random, radius);
             this.generateShell(world, pivot, random, radius);
             radius -= 2;
@@ -299,7 +309,7 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
             DragonBaseEntity dragon = this.getDragonType().create(world.getLevel());
             assert dragon != null;
             dragon.setGender(isMale);
-            dragon.growDragon(40 + ageOffset);
+            dragon.growDragon(125 + ageOffset);
             dragon.setAgingDisabled(true);
             dragon.setHealth(dragon.getMaxHealth());
             dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());

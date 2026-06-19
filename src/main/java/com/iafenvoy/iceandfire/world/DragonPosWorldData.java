@@ -18,7 +18,7 @@ import java.util.UUID;
 public class DragonPosWorldData extends SavedData {
     private static final Factory<DragonPosWorldData> TYPE = new Factory<>(DragonPosWorldData::new, DragonPosWorldData::fromNbt, DataFixTypes.CHUNK);
     private static final String IDENTIFIER = "iceandfire_dragonPositions";
-    protected final Map<UUID, BlockPos> lastDragonPositions = new HashMap<>();
+    public final Map<UUID, BlockPos> lastDragonPositions = new HashMap<>();
 
     private static DragonPosWorldData fromNbt(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         DragonPosWorldData data = new DragonPosWorldData();
